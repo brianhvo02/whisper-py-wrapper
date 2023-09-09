@@ -58,8 +58,11 @@ export interface WhisperResultSegment {
 }
 
 namespace Whisper {
-    export const nativeRun = async (file: string, options: WhisperOptions, ...additionalFiles: string[]) => 
-        new Promise<void>(resolve => {
+    export const nativeRun = async (file: string, options: WhisperOptions | string | null, ...additionalFiles: string[]) => 
+        new Promise<void>(async resolve => {
+            if (!options || typeof options === 'string')
+                options = await readFile(options ?? './config.json', 'utf-8').then(JSON.parse) as WhisperOptions;
+
             const { silent, ...procOptions } = options;
             const files = [file].concat(additionalFiles);
             const proc = spawn('whisper', Object.entries(procOptions).flatMap(([key, value]) => {
@@ -92,10 +95,13 @@ namespace Whisper {
             });
         });
 
-    export async function run(file: Buffer, options: WhisperOptions): Promise<WhisperResult>;
-    export async function run(file: Buffer, options: WhisperOptions, ...additionalFiles: Buffer[]): Promise<WhisperResult[]>;
-    export async function run(file: Buffer, options: WhisperOptions, ...additionalFiles: Buffer[]) {
+    export async function run(file: Buffer, options: WhisperOptions | string | null): Promise<WhisperResult>;
+    export async function run(file: Buffer, options: WhisperOptions | string | null, ...additionalFiles: Buffer[]): Promise<WhisperResult[]>;
+    export async function run(file: Buffer, options: WhisperOptions | string | null, ...additionalFiles: Buffer[]) {
         return new Promise<WhisperResult | WhisperResult[]>(async resolve => {
+            if (!options || typeof options === 'string')
+                options = await readFile(options ?? './config.json', 'utf-8').then(JSON.parse) as WhisperOptions;
+            
             const tempDir = await mkdtemp(join(tmpdir(), 'whisper-'));
             const files = [file].concat(additionalFiles);
             const filePaths = await Promise.all(
