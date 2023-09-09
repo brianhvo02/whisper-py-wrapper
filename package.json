@@ -1,0 +1,21 @@
+{
+  "name": "whisper-wrapper",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "tsc && node dist/index"
+  },
+  "keywords": [],
+  "author": "Brian Vo",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^20.6.0",
+    "typescript": "^5.2.2"
+  },
+  "dependencies": {
+    "nanoid": "^4.0.2"
+  }
+}
